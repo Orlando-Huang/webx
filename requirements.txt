@@ -1,5 +1,3 @@
-PyQt6
-PyQt6-WebEngine
-pillow
+PySide6
 requests
-pandas
+portalocker

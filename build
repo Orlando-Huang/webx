@@ -1,0 +1,30 @@
+#!/bin/bash
+set -e
+
+if [[ "$(uname -s)" == MINGW* && "$(uname -s)" == CYGWIN* ]]; then
+    echo "Currently only available in Windows">&2
+    exit 1
+fi
+
+onexit() {
+    echo "Removing build files..."
+    rm -rf *.build *.dist
+}
+trap onexit EXIT
+
+echo "Compiling main.py..."
+python -m nuitka src/main.py && echo "WebX Done Compiling!"
+
+echo "Compiling upgrade.py..."
+python -m nuitka src/upgrade.py && echo "WebX Upgrade Done Compiling!"
+
+echo "Finalizing Compilation..."
+rm -rf bin
+mv main.dist bin
+mv bin/main.exe bin/WebX.exe
+mkdir bin/data
+echo "Name,Url" > bin/data/bookmarks.csv
+echo "Title,Url" > bin/data/history.csv
+echo "Origin,Permission,State" > bin/data/permissions.csv
+cp -r src/html src/icons bin
+mv -n upgrade.dist/* bin
